@@ -9,7 +9,8 @@
 import UIKit
 
 class MenuBar: UIView{
-
+   var homeController: HomeController?
+   
    lazy var collectionView: UICollectionView = {
       let layout = UICollectionViewFlowLayout()
       let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -32,12 +33,32 @@ class MenuBar: UIView{
       
       let selectedIndex = IndexPath(item: 0, section: 0)
       collectionView.selectItem(at: selectedIndex, animated: true, scrollPosition: .centeredVertically)
+      setupHorizontalBar()
    }
+   
+   var horizontalBarLeftAnchorConstraint: NSLayoutConstraint?
+   
+   func setupHorizontalBar(){
+      
+      let horizontalBarView = UIView()
+      horizontalBarView.backgroundColor = UIColor(white: 1, alpha: 1)
+      horizontalBarView.translatesAutoresizingMaskIntoConstraints = false
+      addSubview(horizontalBarView)
+      
+      horizontalBarLeftAnchorConstraint = horizontalBarView.leftAnchor.constraint(equalTo: self.leftAnchor)
+      horizontalBarLeftAnchorConstraint?.isActive = true
+      horizontalBarView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
+      
+      horizontalBarView.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 1/4).isActive = true
+      horizontalBarView.heightAnchor.constraint(equalToConstant: 6).isActive = true
+      
+   }
+ 
    required init?(coder aDecoder: NSCoder) {
       fatalError("init(coder:) has not been implemented")
    }
-   
 }
+
 
 extension MenuBar: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
    
@@ -61,7 +82,21 @@ extension MenuBar: UICollectionViewDelegate, UICollectionViewDataSource, UIColle
    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
       return 0
    }
+   
+   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+      let x = CGFloat(indexPath.item) * frame.width / 4
+      horizontalBarLeftAnchorConstraint?.constant = x
+      
+      UIView.animate(withDuration: 0.75, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: { 
+         self.layoutIfNeeded()
+      }, completion: nil)
+    
+      homeController?.scrollToMenuIndex(menuIndex: indexPath.item)
+      
+   }
+   
 }
+
 
 
 

@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import SDWebImage
 extension UIColor{
    static func rgb(red: CGFloat, green: CGFloat, blue: CGFloat) -> UIColor{
       return UIColor(displayP3Red: red/255, green: green/255, blue: blue/255, alpha: 1)
@@ -36,32 +36,37 @@ let imageCache = NSCache<AnyObject, AnyObject>()
 class CustomImageView: UIImageView{
    var imageUrlString: String?
    func loadImageFormStringUrl(url: String){
-      imageUrlString = url
-      image = nil
-      if let imageFromCache = imageCache.object(forKey: url as AnyObject) as? UIImage{
-         self.image = imageFromCache
-         return
+   
+      // sdwebimage...........................
+      DispatchQueue.main.async {
+         self.sd_setImage(with: URL(string: url))
       }
-      
-      let imageUrl = URL(string: url)
-      URLSession.shared.dataTask(with: imageUrl!, completionHandler: { (data, response, error) in
-         
-         if error != nil{
-            print(error!)
-         }
-         
-         DispatchQueue.main.async {
-            let imageToCache = UIImage(data: data!)
-            
-            if self.imageUrlString == url{
-               self.image = imageToCache
-            }
-            
-            imageCache.setObject(imageToCache!, forKey: url as AnyObject)
-            
-         }
-         
-      }).resume()
+//      imageUrlString = url
+//      image = nil
+//      if let imageFromCache = imageCache.object(forKey: url as AnyObject) as? UIImage{
+//         self.image = imageFromCache
+//         return
+//      }
+//      
+//      let imageUrl = URL(string: url)
+//      URLSession.shared.dataTask(with: imageUrl!, completionHandler: { (data, response, error) in
+//         
+//         if error != nil{
+//            print(error!)
+//         }
+//         
+//         DispatchQueue.main.async {
+//            let imageToCache = UIImage(data: data!)
+//            
+//            if self.imageUrlString == url{
+//               self.image = imageToCache
+//            }
+//            
+//            imageCache.setObject(imageToCache!, forKey: url as AnyObject)
+//            
+//         }
+//         
+//      }).resume()
    }
 }
 
